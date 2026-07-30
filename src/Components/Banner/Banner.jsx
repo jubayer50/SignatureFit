@@ -1,16 +1,17 @@
 import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
+
 import BannerFour from "./BannerFour";
 import BannerOne from "./BannerOne";
 import BannerThree from "./BannerThree";
 import BannerTwo from "./BannerTwo";
-import { AnimatePresence, motion } from "motion/react";
 
 const Banner = () => {
   const [activeBanner, setActiveBanner] = useState(0);
   const [direction, setDirection] = useState(1);
-  const isAnimating = useRef(false);
+
   const heroRef = useRef(null);
-  const activeBannerRef = useRef(0);
+  const isAnimating = useRef(false);
 
   const banners = [
     <BannerOne key={0} />,
@@ -19,56 +20,89 @@ const Banner = () => {
     <BannerFour key={3} />,
   ];
 
-  const totalBanners = banners.length;
+  const variants = {
+    enter: (direction) => ({
+      y: direction > 0 ? "100%" : "-100%",
+      opacity: 0,
+    }),
+
+    center: {
+      y: "0%",
+      opacity: 1,
+    },
+
+    exit: (direction) => ({
+      y: direction > 0 ? "-100%" : "100%",
+      opacity: 0,
+    }),
+  };
+
+  const changeBanner = (newIndex) => {
+    if (newIndex === activeBanner) return;
+    if (newIndex < 0 || newIndex >= banners.length) return;
+
+    setDirection(newIndex > activeBanner ? 1 : -1);
+    setActiveBanner(newIndex);
+  };
 
   useEffect(() => {
-    activeBannerRef.current = activeBanner;
-  }, [activeBanner]);
-
-  useEffect(() => {
-    const handleWheel = (event) => {
-      const rect = heroRef.current.getBoundingClientRect();
-
-      const isHeroVisible =
-        rect.top <= 80 && rect.bottom >= window.innerHeight * 0.4;
-
-      if (!isHeroVisible) return;
-      if (isAnimating.current) return;
-
-      const current = activeBannerRef.current;
-      const isLast = current === totalBanners - 1;
-      const isFirst = current === 0;
-
-      if ((isLast && event.deltaY > 0) || (isFirst && event.deltaY < 0)) return;
-
-      event.preventDefault();
-      isAnimating.current = true;
-
-      if (event.deltaY > 0) {
-        setDirection(1);
-        setActiveBanner((pre) => Math.min(pre + 1, totalBanners - 1));
-      } else {
-        setDirection(-1);
-        setActiveBanner((pre) => Math.max(pre - 1, 0));
+    const handleWheel = (e) => {
+      // Banner 1-3 পর্যন্ত page scroll lock থাকবে
+      // Banner 4 এ নিচে scroll করলে page unlock হবে
+      if (activeBanner !== banners.length - 1 || e.deltaY < 0) {
+        e.preventDefault();
       }
 
-      setTimeout(() => {
-        isAnimating.current = false;
-      }, 800);
+      if (isAnimating.current) return;
+
+      // Scroll Down
+      if (e.deltaY > 0) {
+        if (activeBanner < banners.length - 1) {
+          isAnimating.current = true;
+
+          changeBanner(activeBanner + 1);
+
+          setTimeout(() => {
+            isAnimating.current = false;
+          }, 1200);
+        }
+
+        return;
+      }
+
+      // Scroll Up
+      if (e.deltaY < 0) {
+        if (activeBanner > 0) {
+          isAnimating.current = true;
+
+          changeBanner(activeBanner - 1);
+
+          setTimeout(() => {
+            isAnimating.current = false;
+          }, 1200);
+        }
+
+        return;
+      }
     };
 
-    window.addEventListener("wheel", handleWheel, { passive: false });
+    const hero = heroRef.current;
+
+    hero?.addEventListener("wheel", handleWheel, {
+      passive: false,
+    });
 
     return () => {
-      window.removeEventListener("wheel", handleWheel);
+      hero?.removeEventListener("wheel", handleWheel);
     };
-  }, []);
+  }, [activeBanner]);
 
   return (
-    <section ref={heroRef} className="relative h-[70vh] overflow-hidden">
+    <section ref={heroRef} className="relative h-full">
       <AnimatePresence initial={false} custom={direction}>
         <motion.div
           key={activeBanner}
+          variants={variants}
           custom={direction}
           initial="enter"
           animate="center"
@@ -83,16 +117,15 @@ const Banner = () => {
         </motion.div>
       </AnimatePresence>
 
-      {/* Indicator UI */}
-      <div className="absolute right-8 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-50">
-        {Array.from({ length: totalBanners }).map((_, index) => (
+      <div className="fixed right-8 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3">
+        {banners.map((_, index) => (
           <button
             key={index}
-            onClick={() => setActiveBanner(index)}
-            className={`transition-all duration-500 rounded-full ${
+            onClick={() => changeBanner(index)}
+            className={`w-3 h-3 rounded-full transition-all duration-300 ${
               activeBanner === index
-                ? "w-2 h-3.5 bg-white"
-                : "w-2 h-2 bg-white/40 hover:bg-white/70"
+                ? "bg-white scale-125"
+                : "bg-white/40 hover:bg-white/70"
             }`}
           />
         ))}

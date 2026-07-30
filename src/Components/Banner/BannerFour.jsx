@@ -3,7 +3,7 @@ import { Button } from "@heroui/react";
 const BannerFour = () => {
   return (
     <section
-      className="relative h-[70vh] bg-cover bg-center bg-no-repeat"
+      className="relative h-full bg-cover bg-center bg-no-repeat"
       style={{
         backgroundImage:
           "url('https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1600&q=80')",
