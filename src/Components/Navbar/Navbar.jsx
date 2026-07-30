@@ -3,6 +3,7 @@ import { FaRegUser } from "react-icons/fa";
 import { FiShoppingBag } from "react-icons/fi";
 import { IoSearch } from "react-icons/io5";
 import MyNavLink from "./MyNavLink";
+import { Link } from "react-router";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -16,7 +17,7 @@ const Navbar = () => {
 
   return (
     <nav className="sticky top-0 z-40 w-full border-b border-separator bg-background/70 backdrop-blur-lg">
-      <header className="max-w-330 mx-auto flex py-3 items-center justify-between px-3">
+      <header className=" flex py-3 items-center justify-between px-4 md:px-10">
         <div className="flex items-center gap-4">
           <button
             className="md:hidden"
@@ -49,7 +50,9 @@ const Navbar = () => {
           </button>
 
           <div>
-            <h2>Fashion</h2>
+            <Link to={"/"}>
+              <h2 className="fair font-bold text-3xl">Signature Fit</h2>
+            </Link>
           </div>
         </div>
 
