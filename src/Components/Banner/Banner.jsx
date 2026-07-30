@@ -117,14 +117,14 @@ const Banner = () => {
         </motion.div>
       </AnimatePresence>
 
-      <div className="fixed right-8 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3">
+      <div className="absolute right-4 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3">
         {banners.map((_, index) => (
           <button
             key={index}
             onClick={() => changeBanner(index)}
-            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${
               activeBanner === index
-                ? "bg-white scale-125"
+                ? "bg-white"
                 : "bg-white/40 hover:bg-white/70"
             }`}
           />
