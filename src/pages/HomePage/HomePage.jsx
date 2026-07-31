@@ -1,4 +1,5 @@
 import Banner from "../../Components/Banner/Banner";
+import Categories from "../../Components/Categories/Categories";
 
 const HomePage = () => {
   return (
@@ -7,7 +8,7 @@ const HomePage = () => {
         <Banner />
       </section>
 
-      <section className="min-h-screen bg-gray-500">About Section</section>
+      <Categories></Categories>
     </>
   );
 };
